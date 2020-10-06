@@ -17,7 +17,7 @@ const Rating = ({ rating, reviews, color }) => {
   });
 
   return (
-    <div className="my-2">
+    <div className="my-2" style={{ display: 'inline-block' }}>
       {stars} ({reviews})
     </div>
   );
