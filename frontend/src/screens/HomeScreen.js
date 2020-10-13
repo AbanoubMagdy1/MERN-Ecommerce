@@ -1,26 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Product from '../components/Product';
 import Loader from '../components/Loader';
+import Message from '../components/Message';
 import { Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { productListAction } from '../actions/productActions';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
-  const productList = useSelector(state => state.productList);
+  const { products, loading, error } = useSelector(state => state.productList);
 
   //Fetch products after loading compoanent
   useEffect(() => {
-    if (productList.products.length === 0) dispatch(productListAction());
+    if (products.length === 0) dispatch(productListAction());
   }, []);
   return (
     <>
       <h1>Latest Products</h1>
-      {productList.loading ? (
+      {loading ? (
         <Loader />
+      ) : error ? (
+        <Message variant="danger" message={error} />
       ) : (
         <Row>
-          {productList.products.map(product => (
+          {products.map(product => (
             <Col sm={12} md={6} lg={4} xl={3} key={product._id}>
               <Product key={product._id} product={product} />
             </Col>
