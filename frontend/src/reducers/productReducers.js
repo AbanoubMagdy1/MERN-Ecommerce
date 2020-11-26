@@ -3,7 +3,9 @@ import {
   PRODUCT_LIST_SUCCESS,
   PRODUCT_LIST_FAIL,
   CART_ADD_ITEM,
-  CART_REMOVE_ITEM
+  CART_REMOVE_ITEM,
+  CART_REQUEST,
+  CART_FAIL,
 } from '../actions/types';
 
 export const productListReducer = (
@@ -22,30 +24,39 @@ export const productListReducer = (
   }
 };
 
-export const cartReducer = (state = {cartItems : []}, action) => {
-  switch (action.type){
-    case CART_ADD_ITEM :
+export const cartReducer = (
+  state = { cartItems: [], loading: true },
+  action
+) => {
+  switch (action.type) {
+    case CART_REQUEST:
+      return { ...state, loading: true };
+    case CART_FAIL:
+      return { ...state, loading: false, error: action.payload };
+    case CART_ADD_ITEM:
       const item = action.payload;
       const existItem = state.cartItems.find(x => x.id === item.id);
-      if(existItem){
-        const items = state.cartItems.map(x => x.id === item.id ? item : x);
+      if (existItem) {
+        const items = state.cartItems.map(x => (x.id === item.id ? item : x));
         return {
           ...state,
-          cartItems : items
-        }
+          loading: false,
+          cartItems: items,
+        };
       } else {
         return {
           ...state,
-          cartItems : [...state.cartItems, item]
-        }
+          loading: false,
+          cartItems: [...state.cartItems, item],
+        };
       }
-    case CART_REMOVE_ITEM :
-      const items = state.cartItems.filter(item => item.id !== action.payload)
+    case CART_REMOVE_ITEM:
+      const items = state.cartItems.filter(item => item.id !== action.payload);
       return {
         ...state,
-        cartItems : items
-      }  
-    default :
-      return state
+        cartItems: items,
+      };
+    default:
+      return state;
   }
-}
+};
