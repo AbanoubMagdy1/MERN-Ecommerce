@@ -6,6 +6,8 @@ import {
   CART_REMOVE_ITEM,
   CART_REQUEST,
   CART_FAIL,
+  CART_SHIPPING_ADDRESS,
+  CART_SHIPPING_METHOD,
 } from './types';
 import axios from 'axios';
 
@@ -61,4 +63,20 @@ export const cartRemove = id => async (dispatch, getState) => {
     payload: id,
   });
   localStorage.setItem('cartItems', JSON.stringify(getState().cart.cartItems));
+};
+
+export const cartAddress = data => async dispatch => {
+  dispatch({
+    type: CART_SHIPPING_ADDRESS,
+    payload: data,
+  });
+  localStorage.setItem('shippingAddress', JSON.stringify(data));
+};
+
+export const cartMethod = method => async dispatch => {
+  dispatch({
+    type: CART_SHIPPING_METHOD,
+    payload: method,
+  });
+  localStorage.setItem('shippingMethod', method);
 };

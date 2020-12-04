@@ -6,6 +6,8 @@ import {
   CART_REMOVE_ITEM,
   CART_REQUEST,
   CART_FAIL,
+  CART_SHIPPING_ADDRESS,
+  CART_SHIPPING_METHOD,
 } from '../actions/types';
 
 export const productListReducer = (
@@ -25,7 +27,7 @@ export const productListReducer = (
 };
 
 export const cartReducer = (
-  state = { cartItems: [], loading: true },
+  state = { cartItems: [], loading: false, shippingAddress: {} },
   action
 ) => {
   switch (action.type) {
@@ -55,6 +57,17 @@ export const cartReducer = (
       return {
         ...state,
         cartItems: items,
+      };
+    case CART_SHIPPING_ADDRESS:
+      return {
+        ...state,
+        shippingAddress: action.payload,
+      };
+
+    case CART_SHIPPING_METHOD:
+      return {
+        ...state,
+        shippingMethod: action.payload,
       };
     default:
       return state;

@@ -14,7 +14,7 @@ import {
 import { cartAdd, cartRemove } from '../actions/productActions';
 import { useDispatch, useSelector } from 'react-redux';
 
-const CartScreen = ({ match, location }) => {
+const CartScreen = ({ history, match, location }) => {
   //Get Amount from the query
   const qty = parseInt(location.search.split('=')[1]);
 
@@ -35,6 +35,10 @@ const CartScreen = ({ match, location }) => {
   useEffect(() => {
     if (match.params.id) dispatch(cartAdd(match.params.id, qty));
   }, [dispatch, match.params.id, qty]);
+
+  const handleClick = () => {
+    history.push('/login?redirect=shipping');
+  };
 
   return (
     <>
@@ -98,7 +102,11 @@ const CartScreen = ({ match, location }) => {
                 <p>${totalPrice.toFixed(2)}</p>
               </ListGroup.Item>
               <ListGroup.Item>
-                <Button className="btn btn-block" disabled={!totalItems}>
+                <Button
+                  className="btn btn-block"
+                  disabled={!totalItems}
+                  onClick={handleClick}
+                >
                   Proceed to checkout
                 </Button>
               </ListGroup.Item>

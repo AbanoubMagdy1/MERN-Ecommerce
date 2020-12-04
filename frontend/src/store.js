@@ -8,9 +8,19 @@ const cartItems = localStorage.getItem('cartItems')
   ? JSON.parse(localStorage.getItem('cartItems'))
   : [];
 
+const shippingAddress = localStorage.getItem('shippingAddress')
+  ? JSON.parse(localStorage.getItem('shippingAddress'))
+  : {};
+
+const shippingMethod = localStorage.getItem('shippingMethod')
+  ? localStorage.getItem('shippingMethod')
+  : '';
+
 const initState = {
   cart: {
     cartItems,
+    shippingAddress,
+    shippingMethod,
   },
 };
 
