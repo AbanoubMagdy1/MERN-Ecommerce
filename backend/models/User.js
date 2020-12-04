@@ -21,6 +21,8 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
+    token: String,
+    expToken: Date,
   },
   {
     timestamps: true,

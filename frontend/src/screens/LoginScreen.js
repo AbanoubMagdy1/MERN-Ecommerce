@@ -72,10 +72,14 @@ const LoginScreen = ({ history, location }) => {
           </Button>
         </Form>
         <p className="my-2">
-          New customer ?
+          New customer ? &nbsp;
           <Link to={redirect ? `/register?redirect=${redirect}` : '/register'}>
             Register
           </Link>
+        </p>
+        <p className="my-3">
+          Forget Your password ? &nbsp;
+          <Link to="/reset">Reset My Password</Link>
         </p>
       </>
     </FormWrapper>
