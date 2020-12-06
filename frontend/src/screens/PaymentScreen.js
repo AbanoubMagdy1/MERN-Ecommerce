@@ -8,9 +8,9 @@ import CheckoutSteps from '../components/CheckoutSteps';
 const PaymentScreen = ({ history }) => {
   const dispatch = useDispatch();
   const { user } = useSelector(state => state.userInfo);
-  const shippingMethod = useSelector(state => state.cart.shippingMethod);
+  const paymentMethod = useSelector(state => state.cart.paymentMethod);
 
-  const [method, setMethod] = useState(shippingMethod);
+  const [method, setMethod] = useState(paymentMethod);
 
   useEffect(() => {
     if (!user) {

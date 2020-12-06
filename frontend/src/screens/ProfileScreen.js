@@ -27,6 +27,7 @@ const RegisterScreen = ({ history, location }) => {
         email: user.email,
       });
     }
+    // eslint-disable-next-line
   }, []);
 
   const handleChange = ({ target }) => {
@@ -38,7 +39,7 @@ const RegisterScreen = ({ history, location }) => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    if (info.password != info.conPassword) {
+    if (info.password !== info.conPassword) {
       setMsg("Password doesn't match");
     } else {
       dispatch(updateProfileAction(info));

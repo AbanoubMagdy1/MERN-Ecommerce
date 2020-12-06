@@ -13,6 +13,7 @@ const HomeScreen = () => {
   //Fetch products after loading compoanent
   useEffect(() => {
     if (products.length === 0) dispatch(productListAction());
+    // eslint-disable-next-line
   }, []);
   return (
     <>

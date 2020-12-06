@@ -7,7 +7,7 @@ import {
   CART_REQUEST,
   CART_FAIL,
   CART_SHIPPING_ADDRESS,
-  CART_SHIPPING_METHOD,
+  CART_PAYMENT_METHOD,
 } from './types';
 import axios from 'axios';
 
@@ -28,32 +28,48 @@ export const productListAction = () => async dispatch => {
 };
 
 export const cartAdd = (id, qty) => async (dispatch, getState) => {
-  dispatch({ type: CART_REQUEST });
-  try {
-    const { data } = await axios.get(`/api/products/${id}`);
+  const cartItems = getState().cart.cartItems;
+  const item = cartItems.find(i => i.id === id);
+  if (item) {
     dispatch({
       type: CART_ADD_ITEM,
       payload: {
-        id: data._id,
-        image: data.image,
-        name: data.name,
-        price: data.price,
-        count: data.countInStock,
+        id: item.id,
+        image: item.image,
+        name: item.name,
+        price: item.price,
+        count: item.count,
         qty: qty,
       },
     });
-    localStorage.setItem(
-      'cartItems',
-      JSON.stringify(getState().cart.cartItems)
-    );
-  } catch (e) {
-    dispatch({
-      type: CART_FAIL,
-      payload:
-        e.response && e.response.data.message
-          ? e.response.data.message
-          : e.message,
-    });
+  } else {
+    dispatch({ type: CART_REQUEST });
+    try {
+      const { data } = await axios.get(`/api/products/${id}`);
+      dispatch({
+        type: CART_ADD_ITEM,
+        payload: {
+          id: data._id,
+          image: data.image,
+          name: data.name,
+          price: data.price,
+          count: data.countInStock,
+          qty: qty,
+        },
+      });
+      localStorage.setItem(
+        'cartItems',
+        JSON.stringify(getState().cart.cartItems)
+      );
+    } catch (e) {
+      dispatch({
+        type: CART_FAIL,
+        payload:
+          e.response && e.response.data.message
+            ? e.response.data.message
+            : e.message,
+      });
+    }
   }
 };
 
@@ -75,8 +91,8 @@ export const cartAddress = data => async dispatch => {
 
 export const cartMethod = method => async dispatch => {
   dispatch({
-    type: CART_SHIPPING_METHOD,
+    type: CART_PAYMENT_METHOD,
     payload: method,
   });
-  localStorage.setItem('shippingMethod', method);
+  localStorage.setItem('paymentMethod', method);
 };

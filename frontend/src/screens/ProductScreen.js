@@ -45,6 +45,7 @@ const ProductScreen = ({ match, history }) => {
   //Fetch product data after loading compoanent
   useEffect(() => {
     fetchProduct();
+    // eslint-disable-next-line
   }, []);
 
   const handleSubmit = () => {

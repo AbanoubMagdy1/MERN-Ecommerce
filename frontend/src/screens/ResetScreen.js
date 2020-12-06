@@ -5,7 +5,6 @@ import FormWrapper from '../components/FormWrapper';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import axios from 'axios';
-import { set } from 'mongoose';
 
 const ResetScreen = ({ history, location }) => {
   const [msg, setMsg] = useState('');

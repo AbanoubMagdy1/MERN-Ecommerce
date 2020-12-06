@@ -6,6 +6,7 @@ import colors from 'colors';
 import { notFound, errorHandler } from './middleware/errorHandling.js';
 import productsRoutes from './routes/products.js';
 import userRoutes from './routes/users.js';
+import orderRoutes from './routes/orders.js';
 
 confifDB();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 
 app.use('/api/products', productsRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/orders', orderRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

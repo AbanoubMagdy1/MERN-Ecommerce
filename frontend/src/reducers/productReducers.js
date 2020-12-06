@@ -7,7 +7,7 @@ import {
   CART_REQUEST,
   CART_FAIL,
   CART_SHIPPING_ADDRESS,
-  CART_SHIPPING_METHOD,
+  CART_PAYMENT_METHOD,
 } from '../actions/types';
 
 export const productListReducer = (
@@ -64,10 +64,10 @@ export const cartReducer = (
         shippingAddress: action.payload,
       };
 
-    case CART_SHIPPING_METHOD:
+    case CART_PAYMENT_METHOD:
       return {
         ...state,
-        shippingMethod: action.payload,
+        paymentMethod: action.payload,
       };
     default:
       return state;

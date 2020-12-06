@@ -22,7 +22,7 @@ const LoginScreen = ({ history, location }) => {
     if (user) {
       history.push(redirect);
     }
-  }, [user]);
+  }, [user, history, redirect]);
 
   const handleChange = ({ target }) => {
     setInfo({
