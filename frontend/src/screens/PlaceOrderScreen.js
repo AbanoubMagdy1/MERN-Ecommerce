@@ -4,7 +4,8 @@ import Message from '../components/Message';
 import Loader from '../components/Loader';
 import FormWrapper from '../components/FormWrapper';
 import { ListGroup, Button, Card, Row, Col, Image } from 'react-bootstrap';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { CART_EMPTY } from '../actions/types';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -12,6 +13,7 @@ const PlaceOrderScreen = ({ history }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const dispatch = useDispatch();
   const { user } = useSelector(state => state.userInfo);
   useEffect(() => {
     if (!user) history.push('/login?redirect=shipping');
@@ -23,13 +25,12 @@ const PlaceOrderScreen = ({ history }) => {
   const { address, country, city, postalCode } = shippingAddress;
 
   //prices
-  const itemsPrice = cartItems.reduce(
-    (acc, cur) => acc + cur.price * cur.qty,
-    0
+  const itemsPrice = Number(
+    cartItems.reduce((acc, cur) => acc + cur.price * cur.qty, 0).toFixed(2)
   );
   const taxPrice = Number((itemsPrice * 0.15).toFixed(2));
   const shippingPrice = itemsPrice > 100 ? 0 : 10;
-  const totalPrice = itemsPrice + taxPrice + shippingPrice;
+  const totalPrice = Number(itemsPrice + taxPrice + shippingPrice).toFixed(2);
 
   //config
   const config = {
@@ -51,6 +52,7 @@ const PlaceOrderScreen = ({ history }) => {
         },
         config
       );
+      dispatch({ type: CART_EMPTY });
       history.push(`/order/${data}`);
     } catch (e) {
       setError(

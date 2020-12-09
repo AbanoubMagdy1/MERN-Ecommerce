@@ -31,7 +31,9 @@ export const createOrder = asyncHandler(async (req, res) => {
   );
   order.shippingPrice = order.itemsPrice > 100 ? 0 : 10;
   order.taxPrice = Number((order.itemsPrice * 0.15).toFixed(2));
-  order.totalPrice = order.itemsPrice + order.shippingPrice + order.taxPrice;
+  order.totalPrice = Number(
+    (order.itemsPrice + order.shippingPrice + order.taxPrice).toFixed(2)
+  );
   await order.save();
   res.json(order._id);
 });
@@ -45,7 +47,6 @@ export const getOrder = asyncHandler(async (req, res) => {
     'user',
     'name email'
   );
-  console.log(typeof req.user._id, typeof order.user._id);
   if (order && order.user._id.equals(req.user._id)) {
     res.json(order);
   } else if (!order) {
@@ -54,5 +55,39 @@ export const getOrder = asyncHandler(async (req, res) => {
   } else {
     res.status(401);
     throw new Error('You are not the owner of this order');
+  }
+});
+
+// @desc   Get all user orders
+// @api    GET api/orders/myorders
+// @access Private
+
+export const getMyOrders = asyncHandler(async (req, res) => {
+  const orders = await Order.find({ user: req.user._id }).select(
+    '_id isPaid isDelivered totalPrice createdAt'
+  );
+  res.json(orders);
+});
+
+// @desc   Update order to be paid
+// @api    PUT api/orders/pay/:id
+// @access Private
+
+export const updateOrderToPaid = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id);
+  if (order) {
+    order.isPaid = true;
+    order.paidAt = Date.now();
+    order.paymentResult = {
+      id: req.body.id,
+      status: req.body.status,
+      update_time: req.body.update_time,
+      email_address: req.body.payer.email_address,
+    };
+    const updatedOrder = await order.save();
+    res.json(updatedOrder);
+  } else {
+    res.status(404);
+    throw new Error('Order not found');
   }
 });

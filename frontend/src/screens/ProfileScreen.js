@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Form, Row, Col } from 'react-bootstrap';
+import { Button, Form, Row, Col, Table } from 'react-bootstrap';
 import { updateProfileAction } from '../actions/userActions';
+import axios from 'axios';
+import moment from 'moment';
 
-const RegisterScreen = ({ history, location }) => {
+const ProfileScreen = ({ history }) => {
   const dispatch = useDispatch();
   const { user, loading, error } = useSelector(state => state.userInfo);
 
@@ -16,10 +18,14 @@ const RegisterScreen = ({ history, location }) => {
     conPassword: '',
   });
   const [msg, setMsg] = useState('');
+  const [msg2, setMsg2] = useState('');
+  const [loader, setLoader] = useState(true);
+  const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     if (!user) {
       history.push('/login');
+      return;
     } else {
       setInfo({
         ...info,
@@ -27,6 +33,7 @@ const RegisterScreen = ({ history, location }) => {
         email: user.email,
       });
     }
+    fetchOrders();
     // eslint-disable-next-line
   }, []);
 
@@ -45,6 +52,28 @@ const RegisterScreen = ({ history, location }) => {
       dispatch(updateProfileAction(info));
     }
   };
+
+  //config
+  const config = {
+    headers: {
+      Authorization: localStorage.getItem('token'),
+    },
+  };
+
+  const fetchOrders = async () => {
+    try {
+      const { data } = await axios.get(`/api/orders/myorders`, config);
+      setOrders(data);
+    } catch (e) {
+      setMsg2(
+        e.response && e.response.data.message
+          ? e.response.data.message
+          : e.message
+      );
+    }
+    setLoader(false);
+  };
+
   return (
     <Row>
       <Col md={3}>
@@ -106,9 +135,62 @@ const RegisterScreen = ({ history, location }) => {
       </Col>
       <Col md={9}>
         <h2>My orders</h2>
+        {loader ? (
+          <Loader />
+        ) : msg2 ? (
+          <Message variant="warning">{msg2}</Message>
+        ) : (
+          <Table striped bordered hover className="table-sm">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>TOTAL</th>
+                <th>PAID</th>
+                <th>DELIEVERED</th>
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {orders.map(order => (
+                <tr key={order._id}>
+                  <td>{order._id}</td>
+                  <td>{moment(order.createdAt).format('L')}</td>
+                  <td>${order.totalPrice}</td>
+                  <td>
+                    <i
+                      className={`fas fa-${order.isPaid ? 'check' : 'times'}`}
+                      style={{ color: `${order.isPaid ? 'green' : 'red'}` }}
+                    ></i>
+                  </td>
+                  <td>
+                    <i
+                      className={`fas fa-${
+                        order.isDelivered ? 'check' : 'times'
+                      }`}
+                      style={{
+                        color: `${order.isDelivered ? 'green' : 'red'}`,
+                      }}
+                    ></i>
+                  </td>
+                  <td>
+                    <Button
+                      onClick={() => history.push(`/order/${order._id}`)}
+                      variant="light"
+                      size="sm"
+                    >
+                      DETAILS
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
       </Col>
     </Row>
   );
 };
 
-export default RegisterScreen;
+export default ProfileScreen;

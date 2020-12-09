@@ -8,6 +8,7 @@ import {
   CART_FAIL,
   CART_SHIPPING_ADDRESS,
   CART_PAYMENT_METHOD,
+  CART_EMPTY,
 } from '../actions/types';
 
 export const productListReducer = (
@@ -20,7 +21,7 @@ export const productListReducer = (
     case PRODUCT_LIST_SUCCESS:
       return { loading: false, products: action.payload };
     case PRODUCT_LIST_FAIL:
-      return { loading: false, error: action.payload };
+      return { ...state, loading: false, error: action.payload };
     default:
       return state;
   }
@@ -68,6 +69,11 @@ export const cartReducer = (
       return {
         ...state,
         paymentMethod: action.payload,
+      };
+    case CART_EMPTY:
+      return {
+        ...state,
+        cartItems: [],
       };
     default:
       return state;

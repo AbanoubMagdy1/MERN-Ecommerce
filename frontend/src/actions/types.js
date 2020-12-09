@@ -8,6 +8,7 @@ export const CART_REQUEST = 'CART_REQUEST';
 export const CART_FAIL = 'CART_FAIL';
 export const CART_SHIPPING_ADDRESS = 'CART_SHIPPING_ADDRESS';
 export const CART_PAYMENT_METHOD = 'CART_PAYMENT_METHOD';
+export const CART_EMPTY = 'CART_EMPTY';
 
 export const USER_REQUEST = 'USER_REQUEST';
 export const USER_SUCCESS = 'USER_SUCCESS';
