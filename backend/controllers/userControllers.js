@@ -155,3 +155,50 @@ export const resetPasswordConfirm = asyncHandler(async (req, res) => {
     );
   }
 });
+
+//desc   Get all the users
+//api    GET api/users/:page
+//access Admin only
+
+export const getUsers = asyncHandler(async (req, res) => {
+  const page = req.params.page;
+  const usersPerPage = 25;
+  const users = await User.find({})
+    .skip((page - 1) * usersPerPage)
+    .limit(usersPerPage);
+  const numOfUsers = await User.countDocuments();
+  res.json({ users, pages: Math.ceil(numOfUsers / usersPerPage) });
+});
+
+//desc   Make a user as an admin
+//api    PUT api/users/:id
+//access Admin only
+
+export const makeUserAdmin = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (user) {
+    user.isAdmin = !user.isAdmin;
+    await user.save();
+    res.send(
+      `${user.name} ${!user.isAdmin ? 'stopped being' : 'became'} an admin`
+    );
+  } else {
+    res.status(404);
+    throw new Error('Not Found');
+  }
+});
+
+//desc   Delete a user
+//api    DELETE api/users/:id
+//access Admin only
+
+export const deleteUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (user) {
+    await user.remove();
+    res.send(`${user.name} has been removed`);
+  } else {
+    res.status(404);
+    throw new Error('Not Found');
+  }
+});

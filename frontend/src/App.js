@@ -13,6 +13,7 @@ import ShippingScreen from './screens/ShippingScreen';
 import PaymentScreen from './screens/PaymentScreen';
 import PlaceOrderScreen from './screens/PlaceOrderScreen';
 import OrderScreen from './screens/OrderScreen';
+import UserListScreen from './screens/UserListScreen';
 import { profileAction } from './actions/userActions';
 import { Container } from 'react-bootstrap';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
@@ -31,7 +32,6 @@ function App() {
         <Container>
           <Switch>
             <Route path="/product/:id" component={ProductScreen} />
-            <Route path="/" component={HomeScreen} exact />
             <Route path="/cart/:id?" component={CartScreen} />
             <Route path="/login" component={LoginScreen} />
             <Route path="/register" component={RegisterScreen} />
@@ -41,6 +41,8 @@ function App() {
             <Route path="/payment" component={PaymentScreen} />
             <Route path="/placeorder" component={PlaceOrderScreen} />
             <Route path="/order/:id" component={OrderScreen} />
+            <Route path="/admin/userlist/:page" component={UserListScreen} />
+            <Route path="/:page?" component={HomeScreen} exact />
           </Switch>
         </Container>
       </main>

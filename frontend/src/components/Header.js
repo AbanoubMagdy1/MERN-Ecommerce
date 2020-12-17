@@ -23,14 +23,25 @@ const Header = () => {
                 </Nav.Link>
               </LinkContainer>
               {user ? (
-                <NavDropdown title={user.name}>
-                  <LinkContainer to="/profile" exact>
-                    <NavDropdown.Item>Profile</NavDropdown.Item>
-                  </LinkContainer>
-                  <NavDropdown.Item onClick={() => dispatch(logoutAction())}>
-                    Logout
-                  </NavDropdown.Item>
-                </NavDropdown>
+                <>
+                  <NavDropdown title={user.name}>
+                    <LinkContainer to="/profile" exact>
+                      <NavDropdown.Item>Profile</NavDropdown.Item>
+                    </LinkContainer>
+                    <NavDropdown.Item onClick={() => dispatch(logoutAction())}>
+                      Logout
+                    </NavDropdown.Item>
+                  </NavDropdown>
+                  {user.isAdmin ? (
+                    <NavDropdown title={'admin'}>
+                      <LinkContainer to="/admin/userlist/1" exact>
+                        <NavDropdown.Item>Users</NavDropdown.Item>
+                      </LinkContainer>
+                    </NavDropdown>
+                  ) : (
+                    ''
+                  )}
+                </>
               ) : (
                 <LinkContainer to="/login" exact>
                   <Nav.Link href="#link">

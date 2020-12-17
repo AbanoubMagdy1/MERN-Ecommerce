@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import {
   Row,
   Col,
@@ -15,6 +16,7 @@ import Loader from '../components/Loader';
 import axios from 'axios';
 
 const ProductScreen = ({ match, history }) => {
+  const { page } = useSelector(state => state.productList);
   const [qty, setQty] = useState(1);
   const [state, setState] = useState({
     loading: true,
@@ -22,7 +24,7 @@ const ProductScreen = ({ match, history }) => {
     error: '',
   });
   const { product, loading, error } = state;
-
+  const pageUrl = page || 1;
   //Get product data function
   const fetchProduct = async () => {
     try {
@@ -54,7 +56,7 @@ const ProductScreen = ({ match, history }) => {
 
   return (
     <>
-      <Link to="/" className="btn btn-light my-2">
+      <Link to={`/${pageUrl}`} className="btn btn-light my-2">
         Go Back
       </Link>
       {loading ? (

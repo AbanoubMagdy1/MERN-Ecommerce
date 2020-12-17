@@ -12,14 +12,19 @@ import {
 } from '../actions/types';
 
 export const productListReducer = (
-  state = { loading: true, products: [] },
+  state = { loading: true, products: [], numOfPages: 1 },
   action
 ) => {
   switch (action.type) {
     case PRODUCT_LIST_REQUEST:
-      return { loading: true, products: [] };
+      return { ...state, loading: true, products: [] };
     case PRODUCT_LIST_SUCCESS:
-      return { loading: false, products: action.payload };
+      return {
+        loading: false,
+        products: action.payload,
+        numOfPages: action.numOfPages,
+        page: action.page,
+      };
     case PRODUCT_LIST_FAIL:
       return { ...state, loading: false, error: action.payload };
     default:

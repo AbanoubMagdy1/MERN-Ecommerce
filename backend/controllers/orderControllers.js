@@ -47,7 +47,7 @@ export const getOrder = asyncHandler(async (req, res) => {
     'user',
     'name email'
   );
-  if (order && order.user._id.equals(req.user._id)) {
+  if (order && (order.user._id.equals(req.user._id) || req.user.isAdmin)) {
     res.json(order);
   } else if (!order) {
     res.status(404);
