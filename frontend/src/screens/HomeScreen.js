@@ -13,11 +13,11 @@ const HomeScreen = ({ match }) => {
     state => state.productList
   );
 
-  const pageUrl = match.params.page || 1;
+  const pageUrl = match.params.page || '1';
   //Fetch products after loading compoanent
   useEffect(() => {
     if (pageUrl !== page) {
-      dispatch(productListAction(match.params.page, 1));
+      dispatch(productListAction(pageUrl, 8));
     }
     // eslint-disable-next-line
   }, [match.params.page]);
