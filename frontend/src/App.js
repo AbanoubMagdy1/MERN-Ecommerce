@@ -4,6 +4,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import HomeScreen from './screens/HomeScreen';
 import ProductScreen from './screens/ProductScreen';
+import ProductEditScreen from './screens/ProductEditScreen';
 import CartScreen from './screens/CartScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
@@ -14,6 +15,8 @@ import PaymentScreen from './screens/PaymentScreen';
 import PlaceOrderScreen from './screens/PlaceOrderScreen';
 import OrderScreen from './screens/OrderScreen';
 import UserListScreen from './screens/UserListScreen';
+import ProductListScreen from './screens/ProductListScreen';
+import OrderListScreen from './screens/OrderListScreen';
 import { profileAction } from './actions/userActions';
 import { Container } from 'react-bootstrap';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
@@ -31,6 +34,8 @@ function App() {
       <main className="main py-3">
         <Container>
           <Switch>
+            <Route path="/product/edit/:id" component={ProductEditScreen} />
+
             <Route path="/product/:id" component={ProductScreen} />
             <Route path="/cart/:id?" component={CartScreen} />
             <Route path="/login" component={LoginScreen} />
@@ -42,6 +47,11 @@ function App() {
             <Route path="/placeorder" component={PlaceOrderScreen} />
             <Route path="/order/:id" component={OrderScreen} />
             <Route path="/admin/userlist/:page" component={UserListScreen} />
+            <Route path="/admin/orderlist/:page" component={OrderListScreen} />
+            <Route
+              path="/admin/productlist/:page"
+              component={ProductListScreen}
+            />
             <Route path="/:page?" component={HomeScreen} exact />
           </Switch>
         </Container>

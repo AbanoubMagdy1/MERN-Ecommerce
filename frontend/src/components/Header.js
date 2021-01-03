@@ -37,6 +37,12 @@ const Header = () => {
                       <LinkContainer to="/admin/userlist/1" exact>
                         <NavDropdown.Item>Users</NavDropdown.Item>
                       </LinkContainer>
+                      <LinkContainer to="/admin/productlist/1" exact>
+                        <NavDropdown.Item>Products</NavDropdown.Item>
+                      </LinkContainer>
+                      <LinkContainer to="/admin/orderlist/1" exact>
+                        <NavDropdown.Item>Orders</NavDropdown.Item>
+                      </LinkContainer>
                     </NavDropdown>
                   ) : (
                     ''

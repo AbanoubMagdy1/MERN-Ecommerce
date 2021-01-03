@@ -69,6 +69,21 @@ export const getMyOrders = asyncHandler(async (req, res) => {
   res.json(orders);
 });
 
+// @desc   Get all orders
+// @api    GET api/orders/all/:page
+// @access Private
+
+export const getAllOrders = asyncHandler(async (req, res) => {
+  const perpage = 25;
+  const page = +req.params.page;
+  const orders = await Order.find()
+    .skip((page - 1) * perpage)
+    .limit(perpage)
+    .populate('user', 'name');
+  const numOfOrders = await Order.countDocuments();
+  res.json({ orders, numOfPages: Math.ceil(numOfOrders / perpage) });
+});
+
 // @desc   Update order to be paid
 // @api    PUT api/orders/pay/:id
 // @access Private
@@ -86,6 +101,23 @@ export const updateOrderToPaid = asyncHandler(async (req, res) => {
     };
     const updatedOrder = await order.save();
     res.json(updatedOrder);
+  } else {
+    res.status(404);
+    throw new Error('Order not found');
+  }
+});
+
+// @desc   Update order to be delivred
+// @api    PUT api/orders/deliver/:id
+// @access Admin
+
+export const updateOrderToDelivred = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id);
+  if (order) {
+    order.isDelivered = true;
+    order.deliveredAt = Date.now();
+    const updatedOrder = await order.save();
+    res.json('Order updated successfully');
   } else {
     res.status(404);
     throw new Error('Order not found');

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pagination, Row, Col } from 'react-bootstrap';
+import { Pagination } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 
 const Paginate = ({ url, page, numOfPages }) => {

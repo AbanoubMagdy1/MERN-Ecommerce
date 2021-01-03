@@ -2,6 +2,7 @@ import {
   PRODUCT_LIST_REQUEST,
   PRODUCT_LIST_SUCCESS,
   PRODUCT_LIST_FAIL,
+  PRODUCT_LIST_REMOVE,
   CART_ADD_ITEM,
   CART_REMOVE_ITEM,
   CART_REQUEST,
@@ -19,7 +20,6 @@ export const productListReducer = (
     case PRODUCT_LIST_REQUEST:
       return { ...state, loading: true, products: [] };
     case PRODUCT_LIST_SUCCESS:
-      console.log(action);
       return {
         loading: false,
         products: action.payload,
@@ -28,6 +28,11 @@ export const productListReducer = (
       };
     case PRODUCT_LIST_FAIL:
       return { ...state, loading: false, error: action.payload };
+    case PRODUCT_LIST_REMOVE:
+      const products = state.products.filter(
+        product => product._id !== action.id
+      );
+      return { ...state, products };
     default:
       return state;
   }

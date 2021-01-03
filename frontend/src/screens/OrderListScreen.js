@@ -6,9 +6,9 @@ import { useSelector } from 'react-redux';
 import { Button, Table } from 'react-bootstrap';
 import axios from 'axios';
 
-const UserListScreen = ({ history, match }) => {
+const OrderListScreen = ({ history, match }) => {
   const { user } = useSelector(state => state.userInfo);
-  const [users, setUsers] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -22,17 +22,17 @@ const UserListScreen = ({ history, match }) => {
   useEffect(() => {
     if (!user || !user.isAdmin) history.push('/');
     else {
-      fetchUsers(match.params.page);
+      fetchOrders(match.params.page);
     }
     // eslint-disable-next-line
   }, [user, match.params.page]);
 
-  const fetchUsers = async page => {
+  const fetchOrders = async page => {
     setLoading(true);
     try {
-      const { data } = await axios.get(`/api/users/${page}`, config);
-      setUsers(data.users);
-      setNumOfPages(data.pages);
+      const { data } = await axios.get(`/api/orders/all/${page}`, config);
+      setOrders(data.orders);
+      setNumOfPages(data.numOfPages);
     } catch (e) {
       setError(
         e.response && e.response.data.message
@@ -43,42 +43,24 @@ const UserListScreen = ({ history, match }) => {
     setLoading(false);
   };
 
-  const deleteUser = async (id, name) => {
+  const updateOrderToDelivred = async (id, price) => {
     if (
-      window.confirm(`Delete ${name}??`) &&
-      window.confirm(`Confirm again to delete ${name}??`)
+      window.confirm(`Update this order to be deliverd whose value ${price}?`)
     ) {
       setLoading(true);
       try {
-        const { data } = await axios.delete(`/api/users/${id}`, config);
-        setMessage(data);
-        setUsers(users.filter(user => user._id !== id));
-      } catch (e) {
-        setError(
-          e.response && e.response.data.message
-            ? e.response.data.message
-            : e.message
+        const { data } = await axios.put(
+          `/api/orders/deliver/${id}`,
+          {},
+          config
         );
-      }
-      setLoading(false);
-    }
-  };
-
-  const makeUserAdmin = async (id, name) => {
-    if (
-      window.confirm(`Make ${name} an admin??`) &&
-      window.confirm(`Confirm again to make ${name} an admin??`)
-    ) {
-      setLoading(true);
-      try {
-        const { data } = await axios.put(`/api/users/${id}`, null, config);
         setMessage(data);
-        setUsers(
-          users.map(user => {
-            if (user._id !== id) return user;
+        setOrders(
+          orders.map(order => {
+            if (order._id !== id) return order;
             else {
-              user.isAdmin = !user.isAdmin;
-              return user;
+              order.isDelivered = true;
+              return order;
             }
           })
         );
@@ -92,9 +74,10 @@ const UserListScreen = ({ history, match }) => {
       setLoading(false);
     }
   };
+
   return (
     <>
-      <h2>USERS</h2>
+      <h2>ORDERS</h2>
       {loading && <Loader />}
       {error && <Message variant="danger">{error}</Message>}
       {message && <Message variant="success">{message}</Message>}
@@ -102,20 +85,28 @@ const UserListScreen = ({ history, match }) => {
         <thead>
           <tr>
             <th>ID</th>
-            <th>NAME</th>
-            <th>EMAIL</th>
-            <th>IS ADMIN</th>
+            <th>OWNER NAME</th>
+            <th>TOTAL PRICE</th>
+            <th>IS PAID</th>
+            <th>IS DELIVERED</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          {users.map(user => (
-            <tr key={user._id}>
-              <td>{user._id}</td>
-              <td>{user.name}</td>
-              <td>{user.email}</td>
+          {orders.map(order => (
+            <tr key={order._id}>
+              <td>{order._id}</td>
+              <td>{order.user.name}</td>
+              <td>${order.totalPrice}</td>
               <td>
-                {user.isAdmin ? (
+                {order.isPaid ? (
+                  <i className="fas fa-check" style={{ color: 'green' }}></i>
+                ) : (
+                  <i className="fas fa-times" style={{ color: 'red' }}></i>
+                )}
+              </td>
+              <td>
+                {order.isDelivered ? (
                   <i className="fas fa-check" style={{ color: 'green' }}></i>
                 ) : (
                   <i className="fas fa-times" style={{ color: 'red' }}></i>
@@ -123,16 +114,13 @@ const UserListScreen = ({ history, match }) => {
               </td>
               <td>
                 <Button
-                  variant="success"
-                  onClick={() => makeUserAdmin(user._id, user.name)}
+                  variant="secondary"
+                  onClick={() =>
+                    updateOrderToDelivred(order._id, order.totalPrice)
+                  }
+                  disabled={order.isDelivered}
                 >
-                  {user.isAdmin ? 'STOP ADMIN' : 'MAKE ADMIN'}
-                </Button>
-                <Button
-                  variant="danger"
-                  onClick={() => deleteUser(user._id, user.name)}
-                >
-                  <i className="fas fa-trash"></i>
+                  Deliver
                 </Button>
               </td>
             </tr>
@@ -140,7 +128,7 @@ const UserListScreen = ({ history, match }) => {
         </tbody>
       </Table>
       <Paginate
-        url="/admin/userlist"
+        url="/admin/orderlist"
         page={parseInt(match.params.page)}
         numOfPages={numOfPages}
       />
@@ -148,4 +136,4 @@ const UserListScreen = ({ history, match }) => {
   );
 };
 
-export default UserListScreen;
+export default OrderListScreen;

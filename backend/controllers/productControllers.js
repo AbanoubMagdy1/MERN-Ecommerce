@@ -28,3 +28,70 @@ export const getProductById = asyncHandler(async (req, res) => {
     throw new Error('Product not found');
   }
 });
+
+// @desc   update one product by id
+// @api    PUT api/products/:id
+// @access Admin
+
+export const updateProductById = asyncHandler(async (req, res) => {
+  const {
+    name,
+    price,
+    description,
+    image,
+    brand,
+    category,
+    countInStock,
+  } = req.body;
+  const product = await Product.findById(req.params.id);
+  if (product) {
+    product.name = name;
+    product.price = price;
+    product.description = description;
+    product.image = image;
+    product.brand = brand;
+    product.category = category;
+    product.countInStock = countInStock;
+    await product.save();
+    res.json(product);
+  } else {
+    res.status(404);
+    throw new Error('Product not found');
+  }
+});
+
+// @desc   delete one product by id
+// @api    DELETE api/products/:id
+// @access Admin
+
+export const deleteProductById = asyncHandler(async (req, res) => {
+  const product = await Product.findById(req.params.id);
+  if (product) {
+    await product.remove();
+    res.send(`${product.name} deleted successfully`);
+  } else {
+    res.status(404);
+    throw new Error('Product not found');
+  }
+});
+
+// @desc   Create new product
+// @api    POST api/products/
+// @access Admin
+
+export const createProduct = asyncHandler(async (req, res) => {
+  const product = new Product({
+    name: 'Sample name',
+    description: 'Sample description',
+    price: 0,
+    countInStock: 0,
+    brand: 'Sample brand',
+    category: 'Sample category',
+    image: '/images/sample.png',
+    user: req.user._id,
+    rating: 0,
+    numReviews: 0,
+  });
+  const createdProduct = await product.save();
+  res.json(createdProduct);
+});

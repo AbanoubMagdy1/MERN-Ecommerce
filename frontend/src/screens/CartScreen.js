@@ -72,6 +72,7 @@ const CartScreen = ({ history, match, location }) => {
                           dispatch(cartAdd(item.id, parseInt(target.value)));
                         }}
                         value={item.qty}
+                        style={{ padding: '5px' }}
                       >
                         {[...Array(item.count).keys()].map(val => (
                           <option value={val + 1} key={val + 1}>

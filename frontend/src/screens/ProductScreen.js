@@ -53,7 +53,6 @@ const ProductScreen = ({ match, history }) => {
   const handleSubmit = () => {
     history.push(`/cart/${product._id}?qty=${qty}`);
   };
-
   return (
     <>
       <Link to={`/${pageUrl}`} className="btn btn-light my-2">
@@ -109,6 +108,8 @@ const ProductScreen = ({ match, history }) => {
                       <Col>
                         <Form.Control
                           as="select"
+                          value={qty}
+                          style={{ padding: '5px' }}
                           onChange={({ target }) => setQty(target.value)}
                         >
                           {[...Array(product.countInStock).keys()].map(val => (

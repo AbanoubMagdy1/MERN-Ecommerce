@@ -34,6 +34,7 @@ const PlaceOrderScreen = ({ match, history }) => {
         }
       }
     }
+    // eslint-disable-next-line
   }, [user, history, order]);
 
   //config
