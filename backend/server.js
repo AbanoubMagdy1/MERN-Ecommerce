@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
 import confifDB from './services/db.js';
+import morgan from 'morgan';
 import path from 'path';
 import colors from 'colors';
 import { notFound, errorHandler } from './middleware/errorHandling.js';
@@ -14,6 +15,11 @@ confifDB();
 
 const app = express();
 const port = process.env.PORT;
+
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+
 app.use(express.json());
 
 app.use('/api/products', productsRoutes);

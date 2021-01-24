@@ -10,7 +10,8 @@ export const getProducts = asyncHandler(async (req, res) => {
   const perPage = +req.query.perpage;
   const products = await Product.find({})
     .skip((page - 1) * perPage)
-    .limit(perPage);
+    .limit(perPage)
+    .select('name price image rating _id numReviews');
   const numOfProducts = await Product.countDocuments();
   res.json({ products, numOfPages: Math.ceil(numOfProducts / perPage) });
 });
@@ -94,4 +95,38 @@ export const createProduct = asyncHandler(async (req, res) => {
   });
   const createdProduct = await product.save();
   res.json(createdProduct);
+});
+
+// @desc   Create or update a review
+// @api    POST api/products/:id/review
+// @access Admin
+
+export const createReview = asyncHandler(async (req, res) => {
+  const { rating, comment } = req.body;
+  const product = await Product.findById(req.params.id);
+  if (product) {
+    const myReview = product.reviews.find(r => r.user.equals(req.user._id));
+    if (myReview) {
+      myReview.rating = rating;
+      myReview.comment = comment;
+    } else {
+      const newReview = {
+        user: req.user._id,
+        name: req.user.name,
+        rating: +rating,
+        comment,
+      };
+      product.reviews.push(newReview);
+    }
+    product.numReviews = product.reviews.length;
+    product.rating = +(
+      product.reviews.reduce((acc, cur) => acc + cur.rating, 0) /
+      product.reviews.length
+    ).toFixed(1);
+    const savedProduct = await product.save();
+    res.status(201).json(savedProduct);
+  } else {
+    res.status(404);
+    throw new Error('Product not found');
+  }
 });

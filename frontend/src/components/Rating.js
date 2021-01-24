@@ -18,7 +18,7 @@ const Rating = ({ rating, reviews, color }) => {
 
   return (
     <div className="my-2" style={{ display: 'inline-block' }}>
-      {stars} ({reviews})
+      {stars} {reviews}
     </div>
   );
 };
@@ -29,7 +29,6 @@ Rating.defaultProps = {
 
 Rating.propTypes = {
   rating: propTypes.number.isRequired,
-  reviews: propTypes.number.isRequired,
   color: propTypes.string.isRequired,
 };
 

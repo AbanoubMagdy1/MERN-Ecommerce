@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import Paginate from '../components/Paginate';
+import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Button, Table } from 'react-bootstrap';
 import axios from 'axios';
@@ -95,7 +96,9 @@ const OrderListScreen = ({ history, match }) => {
         <tbody>
           {orders.map(order => (
             <tr key={order._id}>
-              <td>{order._id}</td>
+              <td>
+                <Link to={`/order/${order._id}`}>{order._id}</Link>
+              </td>
               <td>{order.user.name}</td>
               <td>${order.totalPrice}</td>
               <td>
