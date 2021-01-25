@@ -30,6 +30,18 @@ export const getProductById = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc   get top 3 products
+// @api    GET api/products/top
+// @access Public
+
+export const getTopProducts = asyncHandler(async (req, res) => {
+  const products = await Product.find({})
+    .sort('-rating')
+    .limit(3)
+    .select('name price image rating _id numReviews');
+  res.json(products);
+});
+
 // @desc   update one product by id
 // @api    PUT api/products/:id
 // @access Admin

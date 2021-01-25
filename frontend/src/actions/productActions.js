@@ -2,6 +2,9 @@ import {
   PRODUCT_LIST_REQUEST,
   PRODUCT_LIST_SUCCESS,
   PRODUCT_LIST_FAIL,
+  PRODUCT_TOP_REQUEST,
+  PRODUCT_TOP_SUCCESS,
+  PRODUCT_TOP_FAIL,
   CART_ADD_ITEM,
   CART_REMOVE_ITEM,
   CART_REQUEST,
@@ -26,6 +29,25 @@ export const productListAction = (page, perpage) => async dispatch => {
   } catch (e) {
     dispatch({
       type: PRODUCT_LIST_FAIL,
+      payload:
+        e.response && e.response.data.message
+          ? e.response.data.message
+          : e.message,
+    });
+  }
+};
+
+export const productTopAction = () => async dispatch => {
+  dispatch({ type: PRODUCT_TOP_REQUEST });
+  try {
+    const { data } = await axios.get(`/api/products/top`);
+    dispatch({
+      type: PRODUCT_TOP_SUCCESS,
+      payload: data,
+    });
+  } catch (e) {
+    dispatch({
+      type: PRODUCT_TOP_FAIL,
       payload:
         e.response && e.response.data.message
           ? e.response.data.message

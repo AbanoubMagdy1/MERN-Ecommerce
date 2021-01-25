@@ -3,6 +3,9 @@ import {
   PRODUCT_LIST_SUCCESS,
   PRODUCT_LIST_FAIL,
   PRODUCT_LIST_REMOVE,
+  PRODUCT_TOP_REQUEST,
+  PRODUCT_TOP_SUCCESS,
+  PRODUCT_TOP_FAIL,
   CART_ADD_ITEM,
   CART_REMOVE_ITEM,
   CART_REQUEST,
@@ -33,6 +36,25 @@ export const productListReducer = (
         product => product._id !== action.id
       );
       return { ...state, products };
+    default:
+      return state;
+  }
+};
+
+export const productTopReducer = (
+  state = { loading: true, products: [] },
+  action
+) => {
+  switch (action.type) {
+    case PRODUCT_TOP_REQUEST:
+      return { ...state, loading: true, products: [] };
+    case PRODUCT_TOP_SUCCESS:
+      return {
+        loading: false,
+        products: action.payload,
+      };
+    case PRODUCT_TOP_FAIL:
+      return { ...state, loading: false, error: action.payload };
     default:
       return state;
   }

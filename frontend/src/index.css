@@ -1,3 +1,19 @@
 .main {
   min-height: 80vh;
 }
+
+.carousel .carousel-caption {
+  position: absolute;
+  top: 0;
+}
+
+.carousel .carousel-caption h4 {
+  color: white;
+}
+
+.carousel img {
+  display: block;
+  height: 300px;
+  padding: 30px;
+  margin: 40px auto;
+}
