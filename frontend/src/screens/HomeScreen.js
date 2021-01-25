@@ -10,34 +10,46 @@ import { productListAction, productTopAction } from '../actions/productActions';
 
 const HomeScreen = ({ match }) => {
   const dispatch = useDispatch();
-  const { products, loading, error, numOfPages, page } = useSelector(
-    state => state.productList
-  );
+  const {
+    products,
+    loading,
+    error,
+    numOfPages,
+    page,
+    keyword: storedKeyword,
+  } = useSelector(state => state.productList);
 
   const {
     products: topProducts,
     loading: topLoading,
     error: topError,
   } = useSelector(state => state.top);
+
   const pageUrl = match.params.page || '1';
+  const keyword = match.params.keyword || '';
   //Fetch products after loading compoanent
   useEffect(() => {
-    if (pageUrl !== page) {
-      dispatch(productListAction(pageUrl, 8));
+    if (pageUrl !== page || keyword !== storedKeyword) {
+      dispatch(productListAction(pageUrl, 8, keyword));
     }
     if (topProducts.length === 0) {
       dispatch(productTopAction());
     }
     // eslint-disable-next-line
-  }, [match.params.page]);
+  }, [match.params.page, keyword]);
   return (
     <>
-      <h1>Top Products</h1>
+      {keyword && (
+        <Link to="/" className="btn btn-light">
+          GO BACK
+        </Link>
+      )}
+      {!keyword && <h1>Top Products</h1>}
       {topLoading ? (
         <Loader />
       ) : topError ? (
         <Message variant="danger">{error}</Message>
-      ) : (
+      ) : !keyword ? (
         <Carousel className="my-3">
           {topProducts.map(product => (
             <Carousel.Item className="bg-dark" pause="hover" key={product._id}>
@@ -53,6 +65,8 @@ const HomeScreen = ({ match }) => {
             </Carousel.Item>
           ))}
         </Carousel>
+      ) : (
+        ''
       )}
       <h1>Latest Products</h1>
       {loading ? (

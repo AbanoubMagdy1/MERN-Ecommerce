@@ -6,13 +6,22 @@ import asyncHandler from 'express-async-handler';
 // @access Public
 
 export const getProducts = asyncHandler(async (req, res) => {
+  const keyword = req.query.keyword
+    ? {
+        name: {
+          $regex: req.query.keyword,
+          $options: 'i',
+        },
+      }
+    : {};
+
   const page = +req.query.page;
   const perPage = +req.query.perpage;
-  const products = await Product.find({})
+  const products = await Product.find({ ...keyword })
     .skip((page - 1) * perPage)
     .limit(perPage)
     .select('name price image rating _id numReviews');
-  const numOfProducts = await Product.countDocuments();
+  const numOfProducts = await Product.countDocuments({ ...keyword });
   res.json({ products, numOfPages: Math.ceil(numOfProducts / perPage) });
 });
 

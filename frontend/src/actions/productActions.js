@@ -14,17 +14,18 @@ import {
 } from './types';
 import axios from 'axios';
 
-export const productListAction = (page, perpage) => async dispatch => {
+export const productListAction = (page, perpage, keyword) => async dispatch => {
   dispatch({ type: PRODUCT_LIST_REQUEST });
   try {
     const { data } = await axios.get(
-      `/api/products?page=${page}&perpage=${perpage}`
+      `/api/products?page=${page}&perpage=${perpage}&keyword=${keyword}`
     );
     dispatch({
       type: PRODUCT_LIST_SUCCESS,
       payload: data.products,
       numOfPages: data.numOfPages,
       page,
+      keyword,
     });
   } catch (e) {
     dispatch({

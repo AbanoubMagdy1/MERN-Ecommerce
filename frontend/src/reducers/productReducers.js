@@ -28,6 +28,7 @@ export const productListReducer = (
         products: action.payload,
         numOfPages: action.numOfPages,
         page: action.page,
+        keyword: action.keyword,
       };
     case PRODUCT_LIST_FAIL:
       return { ...state, loading: false, error: action.payload };

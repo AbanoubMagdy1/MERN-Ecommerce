@@ -53,6 +53,11 @@ function App() {
               component={ProductListScreen}
             />
             <Route path="/:page?" component={HomeScreen} exact />
+            <Route
+              path="/search/:keyword/:page?"
+              component={HomeScreen}
+              exact
+            />
           </Switch>
         </Container>
       </main>
