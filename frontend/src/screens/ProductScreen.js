@@ -159,7 +159,7 @@ const ProductScreen = ({ match, history }) => {
                   <ListGroup.Item>
                     <Row>
                       <Col>Price:</Col>
-                      <Col>${product.price}</Col>
+                      <Col data-testid="price">${product.price}</Col>
                     </Row>
                   </ListGroup.Item>
                   <ListGroup.Item>

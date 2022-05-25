@@ -100,7 +100,7 @@ const CartScreen = ({ history, match, location }) => {
             <ListGroup variant="flush">
               <ListGroup.Item>
                 <h3>Subtotal ({totalItems}) items</h3>
-                <p>${totalPrice.toFixed(2)}</p>
+                <p data-testid="cartPrice">${totalPrice.toFixed(2)}</p>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Button
