@@ -29,7 +29,7 @@ function App() {
     }
   }, [dispatch]);
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/">
       <Header />
       <main className="main py-3">
         <Container>
