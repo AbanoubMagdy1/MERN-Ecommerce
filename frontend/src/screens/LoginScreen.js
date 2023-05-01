@@ -33,7 +33,8 @@ const LoginScreen = ({ history, location }) => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    dispatch(loginAction(info.email, info.password));
+    const { email, password } = info;
+    dispatch(loginAction({ email, password }));
   };
   return (
     <FormWrapper>

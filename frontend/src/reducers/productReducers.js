@@ -1,115 +1,101 @@
 import {
-  PRODUCT_LIST_REQUEST,
-  PRODUCT_LIST_SUCCESS,
-  PRODUCT_LIST_FAIL,
-  PRODUCT_LIST_REMOVE,
-  PRODUCT_TOP_REQUEST,
-  PRODUCT_TOP_SUCCESS,
-  PRODUCT_TOP_FAIL,
-  CART_ADD_ITEM,
-  CART_REMOVE_ITEM,
-  CART_REQUEST,
-  CART_FAIL,
-  CART_SHIPPING_ADDRESS,
-  CART_PAYMENT_METHOD,
-  CART_EMPTY,
-} from '../actions/types';
+  productListAction,
+  removeProductAction,
+  productTopAction,
+  cartAddAction,
+  cartRemoveAction,
+  cartAddressAction,
+  cartPaymentMethodAction,
+} from '../actions/productActions'
+import { createReducer } from '@reduxjs/toolkit';
 
-export const productListReducer = (
-  state = { loading: true, products: [], numOfPages: 1 },
-  action
-) => {
-  switch (action.type) {
-    case PRODUCT_LIST_REQUEST:
-      return { ...state, loading: true, products: [] };
-    case PRODUCT_LIST_SUCCESS:
-      return {
-        loading: false,
-        products: action.payload,
-        numOfPages: action.numOfPages,
-        page: action.page,
-        keyword: action.keyword,
-      };
-    case PRODUCT_LIST_FAIL:
-      return { ...state, loading: false, error: action.payload };
-    case PRODUCT_LIST_REMOVE:
-      const products = state.products.filter(
-        product => product._id !== action.id
-      );
-      return { ...state, products };
-    default:
-      return state;
+export const productListReducer = createReducer(
+  { loading: false, products: [], numOfPages: 1 },
+  (builder) => {
+    builder
+      .addCase(productListAction.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(productListAction.fulfilled, (state, action) => {
+        state.loading = false
+        state.products = action.payload.products
+        state.numOfPages = action.payload.numOfPages
+        state.page = action.payload.page
+        state.keyword = action.payload.keyword
+      })
+      .addCase(productListAction.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(removeProductAction, (state, action) => {
+        const products = state.products.filter(
+          product => product._id !== action.payload.id
+        );
+        state.products = products
+  
+      })
+ }
+)
+
+export const productTopReducer = createReducer(
+  { loading: false, products: [] },
+  (builder) => {
+    builder
+      .addCase(productTopAction.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(productTopAction.fulfilled, (state, action) => {
+        state.loading = false
+        state.products = action.payload
+      })
+      .addCase(productTopAction.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+ }
+)
+
+export const cartReducer = createReducer(
+  { cartItems: [], loading: false, shippingAddress: {} },
+  (builder) => {
+    builder
+      .addCase(cartAddAction.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(cartAddAction.fulfilled, (state, action) => {
+        state.loading = false
+        state.error = null;
+        const item = action.payload;
+        const existItem = state.cartItems.find(x => x.id === item.id);
+        if (existItem) {
+          const items = state.cartItems.map(x => (x.id === item.id ? item : x));
+          state.cartItems = items
+        } else {
+          state.cartItems = [...state.cartItems, item]
+        }
+      })
+      .addCase(cartAddAction.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload ?? action.error.message;
+      })
+      .addCase(cartRemoveAction, (state, action) => {
+        const items = state.cartItems.filter(item => item.id !== action.payload);
+        state.cartItems = items
+      })
+      .addCase(cartAddressAction, (state, action) => {
+        state.shippingAddress = action.payload
+        localStorage.setItem('shippingAddress', JSON.stringify(action.payload));
+      })
+      .addCase(cartPaymentMethodAction, (state, action) => {
+        state.paymentMethod = action.payload
+        localStorage.setItem('paymentMethod', action.payload);
+      })
+      .addMatcher(
+        action => action.type.startsWith('cart/items'),
+        (state, action) => {
+          localStorage.setItem('cartItems', JSON.stringify(state.cartItems));
+        }
+      )
   }
-};
-
-export const productTopReducer = (
-  state = { loading: true, products: [] },
-  action
-) => {
-  switch (action.type) {
-    case PRODUCT_TOP_REQUEST:
-      return { ...state, loading: true, products: [] };
-    case PRODUCT_TOP_SUCCESS:
-      return {
-        loading: false,
-        products: action.payload,
-      };
-    case PRODUCT_TOP_FAIL:
-      return { ...state, loading: false, error: action.payload };
-    default:
-      return state;
-  }
-};
-
-export const cartReducer = (
-  state = { cartItems: [], loading: false, shippingAddress: {} },
-  action
-) => {
-  switch (action.type) {
-    case CART_REQUEST:
-      return { ...state, loading: true };
-    case CART_FAIL:
-      return { ...state, loading: false, error: action.payload };
-    case CART_ADD_ITEM:
-      const item = action.payload;
-      const existItem = state.cartItems.find(x => x.id === item.id);
-      if (existItem) {
-        const items = state.cartItems.map(x => (x.id === item.id ? item : x));
-        return {
-          ...state,
-          loading: false,
-          cartItems: items,
-        };
-      } else {
-        return {
-          ...state,
-          loading: false,
-          cartItems: [...state.cartItems, item],
-        };
-      }
-    case CART_REMOVE_ITEM:
-      const items = state.cartItems.filter(item => item.id !== action.payload);
-      return {
-        ...state,
-        cartItems: items,
-      };
-    case CART_SHIPPING_ADDRESS:
-      return {
-        ...state,
-        shippingAddress: action.payload,
-      };
-
-    case CART_PAYMENT_METHOD:
-      return {
-        ...state,
-        paymentMethod: action.payload,
-      };
-    case CART_EMPTY:
-      return {
-        ...state,
-        cartItems: [],
-      };
-    default:
-      return state;
-  }
-};
+)
+    

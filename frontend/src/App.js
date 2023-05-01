@@ -25,7 +25,7 @@ function App() {
   const dispatch = useDispatch();
   useEffect(() => {
     if (localStorage.getItem('token')) {
-      dispatch(profileAction(localStorage.getItem('token')));
+      dispatch(profileAction({token: localStorage.getItem('token')}));
     }
   }, [dispatch]);
   return (

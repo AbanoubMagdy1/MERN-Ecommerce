@@ -1,106 +1,66 @@
 import axios from 'axios';
-import {
-  USER_REQUEST,
-  USER_SUCCESS,
-  USER_FAIL,
-  USER_PROFILE,
-  USER_LOGOUT,
-} from '../actions/types';
+import { createConfig, extractErrorMessage, handleAsync } from '../utils';
+import {createAction, createAsyncThunk} from '@reduxjs/toolkit'
 
-export const loginAction = (email, password) => async dispatch => {
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
-  dispatch({ type: USER_REQUEST });
-  try {
-    const { data } = await axios.post(
-      '/api/users/login',
-      { email, password },
-      config
-    );
-    dispatch({ type: USER_SUCCESS, payload: data });
-  } catch (e) {
-    dispatch({
-      type: USER_FAIL,
-      payload:
-        e.response && e.response.data.message
-          ? e.response.data.message
-          : e.message,
-    });
+async function loginRequest({email, password}){
+  return await axios.post('/api/users/login', {email, password}, createConfig());
+}
+
+async function registerRequest({email, password, name}){
+  return await axios.post('/api/users/register', {email, password, name}, createConfig());
+}
+
+async function profileRequest({token}){
+  return await axios.get('/api/users/profile',createConfig({token}));
+}
+
+async function updateProfileRequest({token, user}){
+  return await axios.put('/api/users/profile', { ...user }, createConfig({token}));
+}
+
+export const loginAction = createAsyncThunk(
+  'user/authenticate',
+  async ({email, password}, thunkAPI) => {
+    const [response, error] = await handleAsync(loginRequest, {email, password});
+    if(error){
+      return thunkAPI.rejectWithValue(extractErrorMessage(error));
+    }
+    return response.data;
   }
-};
+)
 
-export const registerAction = (email, name, password) => async dispatch => {
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
-  dispatch({ type: USER_REQUEST });
-  try {
-    const { data } = await axios.post(
-      '/api/users/register',
-      { email, password, name },
-      config
-    );
-    dispatch({ type: USER_SUCCESS, payload: data });
-  } catch (e) {
-    dispatch({
-      type: USER_FAIL,
-      payload:
-        e.response && e.response.data.message
-          ? e.response.data.message
-          : e.message,
-    });
+export const registerAction = createAsyncThunk(
+  'user/authenticate',
+  async ({email, password, name}, thunkAPI) => {
+    const [response, error] = await handleAsync(registerRequest, {email, password, name});
+    if(error){
+      return thunkAPI.rejectWithValue(extractErrorMessage(error));
+    }
+    return response.data;
   }
-};
+)
 
-export const profileAction = token => async dispatch => {
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: token,
-    },
-  };
-  dispatch({ type: USER_REQUEST });
-  try {
-    const { data } = await axios.get('/api/users/profile', config);
-    dispatch({ type: USER_PROFILE, payload: data });
-  } catch (e) {
-    dispatch({
-      type: USER_FAIL,
-      payload:
-        e.response && e.response.data.message
-          ? e.response.data.message
-          : e.message,
-    });
+export const profileAction = createAsyncThunk(
+  'user/profile',
+  async ({token}, thunkAPI) => {
+    const [response, error] = await handleAsync(profileRequest, {token});
+    if(error){
+      return thunkAPI.rejectWithValue(extractErrorMessage(error));
+    }
+    return response.data;
   }
-};
+)
 
-export const updateProfileAction = user => async dispatch => {
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: localStorage.getItem('token'),
-    },
-  };
-  dispatch({ type: USER_REQUEST });
-  try {
-    const { data } = await axios.put('/api/users/profile', { ...user }, config);
-    dispatch({ type: USER_PROFILE, payload: data });
-  } catch (e) {
-    dispatch({
-      type: USER_FAIL,
-      payload:
-        e.response && e.response.data.message
-          ? e.response.data.message
-          : e.message,
-    });
+export const updateProfileAction = createAsyncThunk(
+  'user/profile',
+  async ({user}, thunkAPI) => {
+    const token = localStorage.getItem('token');
+    const [response, error] = await handleAsync(updateProfileRequest, {token, user});
+    if(error){
+      return thunkAPI.rejectWithValue(extractErrorMessage(error));
+    }
+    return response.data;
   }
-};
+)
 
-export const logoutAction = () => dispatch => {
-  dispatch({ type: USER_LOGOUT });
-};
+export const logoutAction = createAction('user/logout');

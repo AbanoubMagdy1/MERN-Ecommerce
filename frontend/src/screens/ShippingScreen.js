@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Form } from 'react-bootstrap';
-import { cartAddress } from '../actions/productActions';
+import { cartAddressAction } from '../actions/productActions';
 import FormWrapper from '../components/FormWrapper';
 import CheckoutSteps from '../components/CheckoutSteps';
 
@@ -34,7 +34,7 @@ const ShippingScreen = ({ history }) => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    dispatch(cartAddress(info));
+    dispatch(cartAddressAction(info));
     history.push('/payment');
   };
   return (

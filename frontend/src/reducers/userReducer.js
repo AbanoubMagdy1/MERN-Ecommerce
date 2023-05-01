@@ -1,28 +1,45 @@
-import {
-  USER_REQUEST,
-  USER_SUCCESS,
-  USER_FAIL,
-  USER_LOGOUT,
-  USER_PROFILE,
-} from '../actions/types';
+import { createReducer } from '@reduxjs/toolkit';
+import {loginAction, profileAction, logoutAction} from '../actions/userActions'
 
-export const userReducer = (state = {}, action) => {
-  switch (action.type) {
-    case USER_REQUEST:
-      return { loading: true };
-    case USER_SUCCESS:
-      localStorage.setItem('token', action.payload.token);
-      return { loading: false, user: action.payload };
-    case USER_FAIL:
-      console.log(action.payload);
-      localStorage.removeItem('token');
-      return { loading: false, error: action.payload };
-    case USER_LOGOUT:
-      localStorage.removeItem('token');
-      return {};
-    case USER_PROFILE:
-      return { loading: false, user: action.payload };
-    default:
-      return state;
-  }
-};
+export const userReducer = createReducer({loading: false}, (builder) => {
+  builder
+    .addCase(
+      loginAction.fulfilled,
+      (state, action) => {
+        localStorage.setItem('token', action.payload.token);
+        state.loading = false;
+        state.user = action.payload;
+        state.error = null;
+      }
+    )
+    .addCase(
+      profileAction.fulfilled,
+      (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        state.error = null;
+      }
+    )
+    .addCase(
+      logoutAction,
+      (state, action) => {
+        localStorage.removeItem('token');
+        state.loading = false;
+        state.user = null;
+      }
+    )
+    .addMatcher(
+      (action) => action.type.startsWith('user') && action.type.endsWith('pending'),
+      state => {
+        state.loading = true;
+      }
+    )
+    .addMatcher(
+      (action) => action.type.startsWith('user') && action?.type.endsWith('rejected'),
+      (state, action) => {
+        localStorage.removeItem('token');
+        state.loading = false;
+        state.error = action.payload;
+      }
+    )   
+})

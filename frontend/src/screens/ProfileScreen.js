@@ -49,7 +49,7 @@ const ProfileScreen = ({ history }) => {
     if (info.password !== info.conPassword) {
       setMsg("Password doesn't match");
     } else {
-      dispatch(updateProfileAction(info));
+      dispatch(updateProfileAction({user:info}));
     }
   };
 

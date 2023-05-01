@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Form } from 'react-bootstrap';
-import { cartMethod } from '../actions/productActions';
+import { cartPaymentMethodAction } from '../actions/productActions';
 import FormWrapper from '../components/FormWrapper';
 import CheckoutSteps from '../components/CheckoutSteps';
 
@@ -24,7 +24,7 @@ const PaymentScreen = ({ history }) => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    dispatch(cartMethod(method));
+    dispatch(cartPaymentMethodAction(method));
     history.push('/placeorder');
   };
 
@@ -40,6 +40,7 @@ const PaymentScreen = ({ history }) => {
             label="Paypal or credit card"
             name="paymentMethod"
             value="Paypal"
+            checked={method === 'Paypal'}
             onChange={handleChange}
             required
           />

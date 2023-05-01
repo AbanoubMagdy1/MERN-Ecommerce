@@ -1,128 +1,79 @@
-import {
-  PRODUCT_LIST_REQUEST,
-  PRODUCT_LIST_SUCCESS,
-  PRODUCT_LIST_FAIL,
-  PRODUCT_TOP_REQUEST,
-  PRODUCT_TOP_SUCCESS,
-  PRODUCT_TOP_FAIL,
-  CART_ADD_ITEM,
-  CART_REMOVE_ITEM,
-  CART_REQUEST,
-  CART_FAIL,
-  CART_SHIPPING_ADDRESS,
-  CART_PAYMENT_METHOD,
-} from './types';
+import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { extractErrorMessage, handleAsync } from '../utils';
 
-export const productListAction = (page, perpage, keyword) => async dispatch => {
-  dispatch({ type: PRODUCT_LIST_REQUEST });
-  try {
-    const { data } = await axios.get(
-      `/api/products?page=${page}&perpage=${perpage}&keyword=${keyword}`
-    );
-    dispatch({
-      type: PRODUCT_LIST_SUCCESS,
-      payload: data.products,
-      numOfPages: data.numOfPages,
-      page,
-      keyword,
-    });
-  } catch (e) {
-    dispatch({
-      type: PRODUCT_LIST_FAIL,
-      payload:
-        e.response && e.response.data.message
-          ? e.response.data.message
-          : e.message,
-    });
-  }
-};
+async function getProducts({page, perpage, keyword}){
+  return await axios.get(`/api/products?page=${page}&perpage=${perpage}&keyword=${keyword}`)
+}
 
-export const productTopAction = () => async dispatch => {
-  dispatch({ type: PRODUCT_TOP_REQUEST });
-  try {
-    const { data } = await axios.get(`/api/products/top`);
-    dispatch({
-      type: PRODUCT_TOP_SUCCESS,
-      payload: data,
-    });
-  } catch (e) {
-    dispatch({
-      type: PRODUCT_TOP_FAIL,
-      payload:
-        e.response && e.response.data.message
-          ? e.response.data.message
-          : e.message,
-    });
-  }
-};
+async function getProduct({id}){
+  return await axios.get(`/api/products/${id}`)
+}
 
-export const cartAdd = (id, qty) => async (dispatch, getState) => {
-  const cartItems = getState().cart.cartItems;
-  const item = cartItems.find(i => i.id === id);
-  if (item) {
-    dispatch({
-      type: CART_ADD_ITEM,
-      payload: {
-        id: item.id,
-        image: item.image,
-        name: item.name,
-        price: item.price,
-        count: item.count,
-        qty: qty,
-      },
-    });
-  } else {
-    dispatch({ type: CART_REQUEST });
-    try {
-      const { data } = await axios.get(`/api/products/${id}`);
-      dispatch({
-        type: CART_ADD_ITEM,
-        payload: {
-          id: data._id,
-          image: data.image,
-          name: data.name,
-          price: data.price,
-          count: data.countInStock,
-          qty: qty,
-        },
-      });
-      localStorage.setItem(
-        'cartItems',
-        JSON.stringify(getState().cart.cartItems)
-      );
-    } catch (e) {
-      dispatch({
-        type: CART_FAIL,
-        payload:
-          e.response && e.response.data.message
-            ? e.response.data.message
-            : e.message,
-      });
+async function getTopProducts(){
+  return await axios.get('/api/products/top')
+}
+
+export const productListAction = createAsyncThunk(
+  'products/fetch',
+  async (params, thunkAPI) => {
+    const [response, error] = await handleAsync(getProducts, params);
+    if (error) return thunkAPI.rejectWithValue(extractErrorMessage(error));
+    return {
+      products: response.data.products,
+      numOfPages: response.data.numOfPages,
+      page: params.page,
+      keyword: params.keyword
     }
   }
-};
+)
 
-export const cartRemove = id => async (dispatch, getState) => {
-  dispatch({
-    type: CART_REMOVE_ITEM,
-    payload: id,
-  });
-  localStorage.setItem('cartItems', JSON.stringify(getState().cart.cartItems));
-};
+export const removeProductAction = createAction('product/remove')
 
-export const cartAddress = data => async dispatch => {
-  dispatch({
-    type: CART_SHIPPING_ADDRESS,
-    payload: data,
-  });
-  localStorage.setItem('shippingAddress', JSON.stringify(data));
-};
+export const productTopAction = createAsyncThunk(
+  'products-top/fetch',
+  async(params, thunkAPI) => {
+    const [response, error] = await handleAsync(getTopProducts)
+    if(error) thunkAPI.rejectWithValue(extractErrorMessage(error))
+    return response.data
+  }
+)
 
-export const cartMethod = method => async dispatch => {
-  dispatch({
-    type: CART_PAYMENT_METHOD,
-    payload: method,
-  });
-  localStorage.setItem('paymentMethod', method);
-};
+export const cartAddAction = createAsyncThunk(
+  'cart/items/add',
+  async ({id, qty}, thunkAPI) => {
+    let product;
+    const cartItems = thunkAPI.getState().cart.cartItems;
+
+    if(cartItems.find(i => i.id === id)){
+      product = cartItems.find(i => i.id === id)
+    } else {
+      const [response, error] = await handleAsync(getProduct, {id})
+      if(error) thunkAPI.rejectWithValue(extractErrorMessage(error))
+      product = response.data
+    }
+    
+    return {
+      id: product._id ?? product.id,
+      image: product.image,
+      name: product.name,
+      price: product.price,
+      count: product.countInStock ?? product.count,
+      qty,
+    }
+    /*
+    //TODO: move this to the reducer
+    localStorage.setItem(
+      'cartItems',
+      JSON.stringify(getState().cart.cartItems)
+    );*/
+  }
+)
+
+export const cartRemoveAction = createAction('cart/items/remove')
+
+export const cartAddressAction = createAction('cart/address')
+
+export const cartPaymentMethodAction = createAction('cart/payment-method')
+
+

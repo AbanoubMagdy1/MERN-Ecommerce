@@ -18,7 +18,7 @@ const HomeScreen = ({ match }) => {
     page,
     keyword: storedKeyword,
   } = useSelector(state => state.productList);
-
+  console.log(page, storedKeyword)
   const {
     products: topProducts,
     loading: topLoading,
@@ -30,7 +30,7 @@ const HomeScreen = ({ match }) => {
   //Fetch products after loading compoanent
   useEffect(() => {
     if (pageUrl !== page || keyword !== storedKeyword) {
-      dispatch(productListAction(pageUrl, 8, keyword));
+      dispatch(productListAction({page: pageUrl,perpage: 8, keyword}));
     }
     if (topProducts.length === 0) {
       dispatch(productTopAction());

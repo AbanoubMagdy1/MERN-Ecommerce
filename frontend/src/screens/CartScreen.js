@@ -11,7 +11,7 @@ import {
   Button,
   ListGroup,
 } from 'react-bootstrap';
-import { cartAdd, cartRemove } from '../actions/productActions';
+import { cartAddAction, cartRemoveAction } from '../actions/productActions';
 import { useDispatch, useSelector } from 'react-redux';
 
 const CartScreen = ({ history, match, location }) => {
@@ -33,7 +33,7 @@ const CartScreen = ({ history, match, location }) => {
   //Dispatch adding item
   const dispatch = useDispatch();
   useEffect(() => {
-    if (match.params.id) dispatch(cartAdd(match.params.id, qty));
+    if (match.params.id) dispatch(cartAddAction({id: match.params.id, qty}));
   }, [dispatch, match.params.id, qty]);
 
   const handleClick = () => {
@@ -69,7 +69,7 @@ const CartScreen = ({ history, match, location }) => {
                       <Form.Control
                         as="select"
                         onChange={({ target }) => {
-                          dispatch(cartAdd(item.id, parseInt(target.value)));
+                          dispatch(cartAddAction({id: item.id, qty: parseInt(target.value)}));
                         }}
                         value={item.qty}
                         style={{ padding: '5px' }}
@@ -84,7 +84,7 @@ const CartScreen = ({ history, match, location }) => {
                     <Col md={2}>
                       <Button
                         className="btn btn-light"
-                        onClick={() => dispatch(cartRemove(item.id))}
+                        onClick={() => dispatch(cartRemoveAction(item.id))}
                       >
                         <i className="fas fa-trash"></i>
                       </Button>
